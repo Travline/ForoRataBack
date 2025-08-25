@@ -15,5 +15,6 @@ app = FastAPI()
 async def test():
     cur = await connectiondb()
     cur.execute("Select * FROM users;")
-    response = (cur.fetchone())[1]
-    return {"email":str(response)}
+    for i in [1, 2, 3]:    
+        response = (cur.fetchone())[i]
+        return {"rsp":str(response)}
