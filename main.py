@@ -1,20 +1,15 @@
 from fastapi import FastAPI
-import psycopg2
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-
-async def connectiondb():
-    conn = psycopg2.connect(os.getenv("DATABASE_URL"))
-    return conn.cursor()
+from db_connection import connection_on
 
 app = FastAPI()
 
 @app.get("/")
 async def test():
-    cur = await connectiondb()
+    con = await connection_on()
+    cur = con.cursor()
     cur.execute("Select * FROM users;")
-    for i in [1, 2, 3]:    
-        response = (cur.fetchone())[i]
-        return {"rsp":str(response)}
+    response = cur.fetchall()
+    con.close()
+    cur.close()
+    return {"rsp":str(response)}
+    
