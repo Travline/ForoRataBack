@@ -6,11 +6,11 @@ class User(BaseModel):
     id_user:str
     email:str
     password_hash:str
-    profile_picture:Optional[str]
-    description:Optional[str]
-    followers_count:Optional[int]
-    following_count:Optional[int]
-    created:Optional[datetime]
+    profile_picture:Optional[str] = ""
+    description:Optional[str] = ""
+    followers_count:Optional[int] = 0
+    following_count:Optional[int] = 0
+    created:Optional[datetime] = datetime.now()
 
 class Post(BaseModel):
     id_post:Optional[int]
