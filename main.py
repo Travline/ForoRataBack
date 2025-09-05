@@ -3,8 +3,8 @@ from db_connection import connection_on
 
 app = FastAPI()
 
-@app.get("/")
-async def test():
+@app.get("/users")
+async def get_posts():
     con = await connection_on()
     cur = con.cursor()
     cur.execute("Select * FROM users;")
@@ -12,4 +12,3 @@ async def test():
     con.close()
     cur.close()
     return {"rsp":str(response)}
-    

@@ -1,23 +1,24 @@
 from pydantic import BaseModel
+from typing import Optional
 from datetime import datetime
 
 class User(BaseModel):
     id_user:str
     email:str
     password_hash:str
-    profile_picture:str
-    description:str
-    followers_count:str
-    following_count:str
-    created:datetime
+    profile_picture:Optional[str]
+    description:Optional[str]
+    followers_count:Optional[int]
+    following_count:Optional[int]
+    created:Optional[datetime]
 
 class Post(BaseModel):
-    id_post:int
+    id_post:Optional[int]
     id_user:str
     contentPost:str
-    likesCount:int
-    comments_count:int
-    created:datetime
+    likesCount:Optional[int]
+    comments_count:Optional[int]
+    created:Optional[datetime]
 
 class Follows(BaseModel):
     id_user_follower:str
