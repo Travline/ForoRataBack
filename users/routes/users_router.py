@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from database.db_connection import connection_on
-from models.user_request import UserRequest
+from core.db_connection import connection_on
+from users.models.users_schemas import UserRequest
 from psycopg2 import Error
 
 router = APIRouter()
@@ -8,7 +8,7 @@ router = APIRouter()
 @router.get("/users/{user_id}")
 async def get_user_data(user_id:str):
     try:    
-        conn = connection_on()
+        conn = await connection_on()
         cur = conn.cursor()
         cur.execute("""SELECT id_user, profile_picture, description, followers_count, following_count 
                        FROM users WHERE id_user = %s;""", (user_id,))
@@ -33,7 +33,7 @@ async def get_user_data(user_id:str):
 @router.post("/users")
 async def create_user(user:UserRequest):
     try:    
-        conn = connection_on()
+        conn = await connection_on()
         cur = conn.cursor()
         cur.execute("""INSERT INTO users(id_user, email, password_hash, profile_picture) 
                        VALUES (%s, %s, %s, %s);""",
