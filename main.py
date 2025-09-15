@@ -1,6 +1,14 @@
 from fastapi import FastAPI
-from users.routes import users_router
+from contextlib import asynccontextmanager
+from core.db_connection import connection_on, connection_off
+from users.routes.router import router as users_router
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app:FastAPI):
+    await connection_on()
+    yield
+    await connection_off()
 
-app.include_router(users_router.router)
+app = FastAPI(lifespan=lifespan)
+
+app.include_router(users_router, prefix="/users")
