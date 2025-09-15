@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from core.db_connection import connection_on, connection_off
+from core.database.db_connection import connection_on, connection_off
 from users.routes.router import router as users_router
 
 @asynccontextmanager
