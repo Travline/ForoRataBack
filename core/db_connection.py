@@ -1,12 +1,20 @@
-from psycopg2 import connect
-from core.config import get_db_url, get_supabase_key, get_supabase_url
-from supabase import create_client, Client
+from asyncpg import Pool, create_pool
+from core.config import get_db_url
+from fastapi import FastAPI
+from typing import Optional
 
-async def supabase_on():
-    supabase:Client = create_client(supabase_url= await get_supabase_url,
-                                          supabase_key=await get_supabase_key)
-    return supabase
+pool: Optional[Pool] | None = None
 
 async def connection_on():
-    conn = connect(await get_db_url())
-    return conn
+    global pool
+    pool = await create_pool(dsn=await get_db_url(), min_size=1, max_size=5)
+
+async def connection_off():
+    global pool
+    if pool:
+        await pool.close()
+
+async def get_pool():
+    if pool is None:
+        raise RuntimeError("Database pool not initialized")
+    return pool
