@@ -12,3 +12,7 @@ async def lifespan(app:FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(users_router, prefix="/users")
+
+@app.get("/")
+def oal():
+    return "oli"
