@@ -1,12 +1,13 @@
-from core.database.db_helper import fetch_one
-from asyncpg.exceptions import PostgresError
+from core.database.db_helper import fetch_one, execute_query
+from asyncpg.exceptions import PostgresError, UniqueViolationError
 from typing import Optional
 from utils.exceptions import RepositoryError
+from users.models.schemas import UserCreate
 
 async def select_user_profile_data(user_id:str) -> Optional[dict]:
     try:
-        query = ("SELECT profile_picture, description, followers_count, following_count "+
-                 "FROM users WHERE id_user = $1;")
+        query = ("""SELECT profile_picture, description, followers_count, following_count 
+                    FROM users WHERE id_user = $1;""")
         response = await fetch_one(query, user_id)
         if not response:
             return None
@@ -21,19 +22,14 @@ async def select_user_profile_data(user_id:str) -> Optional[dict]:
     except PostgresError as pe:
         raise RepositoryError(f"DB error with select_user_profile_data '{user_id}': {str(pe)}") from pe
     
-"""async def insert_new_user(user_data:UserCreate):
+async def insert_new_user(user_data:UserCreate):
     try:
-        conn = await connection_on()
-        cur = conn.cursor()
-        cur.execute(INSERT INTO users(id_user, email, password_hash, profile_picture) 
-                    VALUES (%s, %s, %s, %s);,
-                    (user_data.id_user,
-                     user_data.email,
-                     user_data.password_hash,
-                     user_data.profile_picture))
-        conn.commit()
-        cur.close()
-        conn.close()
-        return {"message":"Created"}
-    except Error as e:
-        return {"message":str(e.pgerror)}"""
+        query = ("""INSERT INTO users (id_user, email, password_hash, profile_picture) 
+                    VALUES($1, $2, $3, $4);""")
+        await execute_query(query,
+                            user_data.id_user,
+                            user_data.email,
+                            user_data.password_hash,
+                            user_data.profile_picture)
+    except UniqueViolationError as uve:
+        raise UniqueViolationError(f"{str(uve)}") from uve

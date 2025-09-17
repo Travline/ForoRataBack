@@ -8,7 +8,7 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     email:EmailStr
     password_hash:str
-    profile_picture:Optional[str]
+    profile_picture:Optional[str] = ""
 
 class UserSearchData(UserBase):
     profile_picture:str

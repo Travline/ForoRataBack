@@ -1,8 +1,9 @@
 from fastapi import APIRouter, HTTPException, status
 from users.models.schemas import UserCreate
-from users.services import get_user_profile_data
+from users.services import get_user_profile_data, create_new_user
 from typing import Optional
 from utils.exceptions import ServiceError
+from asyncpg.exceptions import UniqueViolationError
 
 router = APIRouter()
 
@@ -16,6 +17,13 @@ async def get_profile_data(user_id:str) -> Optional[dict]:
     except ServiceError as se:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
     
-"""@router.post("/create_user")
+@router.post("/register")
 async def create_user(user_data:UserCreate):
-    return"""
+    try:
+        await create_new_user(user_data)
+        return {"message":True}
+    except UniqueViolationError as uve:
+        raise HTTPException(status_code=666, detail="User alredy exists")
+    except ServiceError as se:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
+    

@@ -15,11 +15,12 @@ ph = PasswordHasher(
 async def hash_secret(secret:str) -> Optional[str]:
     try:
         if len((str(secret)).strip()) >= 8:
-            return ph.hash(secret+get_pepper())
+            pepper =  await get_pepper()
+            return ph.hash(secret+pepper)
         else:
             return None
     except Argon2Error as ae:
-        raise HashError(f"Hashing error: {ae}") from ae
+        raise HashError(f"Hashing error: {str(ae)}") from ae
 
 async def verify_secret(storaged_secret:str, secret:str) -> Optional[bool]:
     try:
@@ -28,4 +29,4 @@ async def verify_secret(storaged_secret:str, secret:str) -> Optional[bool]:
         else:
             return None
     except Argon2Error as ae:
-        raise VerifyHashError(f"Verify error: {ae}") from ae
+        raise VerifyHashError(f"Verify error: {str(ae)}") from ae
