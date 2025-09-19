@@ -17,3 +17,6 @@ class UserProfileData(UserSearchData):
     description:str
     followers:int
     following:int
+
+class UserLogin(UserBase):
+    password_hash:str

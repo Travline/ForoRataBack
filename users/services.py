@@ -1,9 +1,9 @@
-from users.models.schemas import UserProfileData, UserCreate
-from users.repository import select_user_profile_data, insert_new_user
+from users.models.schemas import UserProfileData, UserCreate, UserLogin
+from users.repository import select_user_profile_data, insert_new_user, select_user_credentials
 from utils.exceptions import ServiceError
 from typing import Optional
 from random import randint
-from core.hash_managment import hash_secret
+from core.hash_managment import hash_secret, verify_secret
 from asyncpg.exceptions import UniqueViolationError
 
 async def random_rat_url():
@@ -22,7 +22,8 @@ async def create_new_user(user_data:UserCreate):
         if len(user_data.id_user) >= 2:
             user_data.password_hash = await hash_secret(user_data.password_hash)
             user_data.profile_picture = await random_rat_url()
-            await insert_new_user(user_data)
+            response = await insert_new_user(user_data)
+            return response
         else:
             raise ServiceError(f"Creating user error in id_user")
     except UniqueViolationError as uve:
@@ -41,5 +42,15 @@ async def get_user_profile_data(user_id:str) -> Optional[dict]:
             following=data["following_count"]
         )
         return user.model_dump()
+    except Exception as e:
+        raise ServiceError(f"Building user error: {str(e)}") from e
+    
+async def check_user_login(user_data:UserLogin) -> Optional[dict]:
+    try:
+        data = await select_user_credentials(user_data.id_user.strip())
+        if not data is None:
+            storaged_pass = data["password_hash"]
+            if await verify_secret(storaged_pass, user_data.password_hash.strip()):
+                return {"id_user":user_data.id_user.strip()}
     except Exception as e:
         raise ServiceError(f"Building user error: {str(e)}") from e

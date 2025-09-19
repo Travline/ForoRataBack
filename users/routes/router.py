@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
-from users.models.schemas import UserCreate
-from users.services import get_user_profile_data, create_new_user
+from users.models.schemas import UserCreate, UserLogin
+from users.services import get_user_profile_data, create_new_user, check_user_login
 from typing import Optional
 from utils.exceptions import ServiceError
 from asyncpg.exceptions import UniqueViolationError
@@ -12,7 +12,7 @@ async def get_profile_data(user_id:str) -> Optional[dict]:
     try:
         user = await get_user_profile_data(user_id)
         if not user:
-            raise HTTPException(status_code=404, detail="User not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
         return user
     except ServiceError as se:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
@@ -20,10 +20,21 @@ async def get_profile_data(user_id:str) -> Optional[dict]:
 @router.post("/register")
 async def create_user(user_data:UserCreate):
     try:
-        await create_new_user(user_data)
-        return {"message":True}
+        response = await create_new_user(user_data)
+        if not response is None:
+            return response
     except UniqueViolationError as uve:
         raise HTTPException(status_code=666, detail="User alredy exists")
     except ServiceError as se:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
-    
+
+@router.post("/login")
+async def user_login(user_data:UserLogin):
+    try:
+        response = await check_user_login(user_data)
+        if not response:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        else:
+            return response
+    except ServiceError as se:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
