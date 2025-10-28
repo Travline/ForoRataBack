@@ -1,8 +1,8 @@
-from core.database.db_helper import fetch_one, execute_query
+from core.database.db_helper import fetch_one, execute_query, fetch_all
 from asyncpg.exceptions import PostgresError, UniqueViolationError
-from typing import Optional
+from typing import Optional, List
 from utils.exceptions import RepositoryError
-from users.models.schemas import UserCreate, UserLogin
+from users.schemas import UserCreate, UserLogin
 
 async def select_user_profile_data(user_id:str) -> Optional[dict]:
     try:
@@ -11,13 +11,8 @@ async def select_user_profile_data(user_id:str) -> Optional[dict]:
         response = await fetch_one(query, user_id)
         if not response:
             return None
-        data = dict(
-            id_user = user_id,
-            profile_picture = response["profile_picture"],
-            description = response["description"],
-            followers_count = response["followers_count"],
-            following_count = response["following_count"]
-        )
+        data:dict = {"id_user":user_id}
+        data.update(dict(response))
         return data
     except PostgresError as pe:
         raise RepositoryError(f"DB error with select_user_profile_data '{user_id}': {str(pe)}") from pe
@@ -42,7 +37,24 @@ async def select_user_credentials(user_id:str) -> Optional[str]:
     try:
         query = """SELECT password_hash FROM users 
                    WHERE id_user = $1"""
-        response = await fetch_one(query, user_id)
-        return {"password_hash":response["password_hash"]}
+        data = await fetch_one(query, user_id)
+        if data is not None:
+            return {"password_hash":data["password_hash"]}
     except PostgresError as pe:
         raise RepositoryError(f"DB error with select_user_profile_data : {str(pe)}") from pe
+    
+async def find_users(user_id:str) -> Optional[List[dict]]:
+    try:
+        query = """SELECT id_user, profile_picture 
+                   FROM users WHERE id_user LIKE $1
+                   LIMIT 10;"""
+        user_searching = user_id.strip() + '%'
+        response = await fetch_all(query, user_searching)
+        if not response:
+            return None
+        data:List[dict] = []
+        for r in response:
+            data.append(dict(r))
+        return data
+    except PostgresError as pe:
+        raise RepositoryError(f"DB error with select_user_profile_data '{user_id}': {str(pe)}") from pe

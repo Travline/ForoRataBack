@@ -20,3 +20,4 @@ class UserProfileData(UserSearchData):
 
 class UserLogin(UserBase):
     password_hash:str
+    

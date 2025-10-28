@@ -1,10 +1,11 @@
-from users.models.schemas import UserProfileData, UserCreate, UserLogin
-from users.repository import select_user_profile_data, insert_new_user, select_user_credentials
+from users.schemas import UserProfileData, UserCreate, UserLogin, UserSearchData
+from users.repository import select_user_profile_data, insert_new_user, select_user_credentials, find_users
 from utils.exceptions import ServiceError
-from typing import Optional
+from typing import Optional, List
 from random import randint
-from core.hash_managment import hash_secret, verify_secret
+from core.hash_manager import hash_secret, verify_secret
 from asyncpg.exceptions import UniqueViolationError
+from core.middleware.jwt.jwt_manager import create_token
 
 async def random_rat_url():
     rats_url = ["https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/eat.webp",
@@ -23,7 +24,8 @@ async def create_new_user(user_data:UserCreate):
             user_data.password_hash = await hash_secret(user_data.password_hash)
             user_data.profile_picture = await random_rat_url()
             response = await insert_new_user(user_data)
-            return response
+            token = await create_token(response["id_user"])
+            return token
         else:
             raise ServiceError(f"Creating user error in id_user")
     except UniqueViolationError as uve:
@@ -51,6 +53,18 @@ async def check_user_login(user_data:UserLogin) -> Optional[dict]:
         if not data is None:
             storaged_pass = data["password_hash"]
             if await verify_secret(storaged_pass, user_data.password_hash.strip()):
-                return {"id_user":user_data.id_user.strip()}
+                user = user_data.id_user.strip()
+                token = await create_token(user)
+                return token
+    except Exception as e:
+        raise ServiceError(f"Building user error: {str(e)}") from e
+    
+async def searching_user(user_id:str) -> Optional[List[dict]]:
+    try:
+        data = await find_users(user_id.strip())
+        response:List[dict] = []
+        for d in data:
+            response.append(UserSearchData(id_user=d["id_user"],profile_picture=d["profile_picture"]).model_dump())
+        return response
     except Exception as e:
         raise ServiceError(f"Building user error: {str(e)}") from e

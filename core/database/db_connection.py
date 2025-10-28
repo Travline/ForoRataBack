@@ -6,7 +6,7 @@ pool: Optional[Pool] | None = None
 
 async def connection_on():
     global pool
-    pool = await create_pool(dsn=await get_db_url(), min_size=1, max_size=5)
+    pool = await create_pool(dsn= await get_db_url(), min_size=1, max_size=5)
 
 async def connection_off():
     global pool

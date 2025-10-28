@@ -2,7 +2,8 @@ from dotenv import load_dotenv
 from os import getenv
 from typing import Optional
 
-PUBLIC_PATHS = ["/login", "/signup", "/docs", "/openapi.json", "/redoc"]
+PUBLIC_PATHS = ["/docs", "/openapi.json", "/redoc"]
+NO_AUTH_PATHS = [""]
 
 async def get_db_url() -> Optional[str]:
     load_dotenv()
@@ -19,3 +20,11 @@ async def get_api_key_name() -> Optional[str]:
 async def get_pepper() -> Optional[str]:
     load_dotenv()
     return getenv("PEPPER")
+
+async def get_jwt_key() -> Optional[str]:
+    load_dotenv()
+    return getenv("JWT_KEY")
+
+async def get_jwt_algorithm() -> Optional[str]:
+    load_dotenv()
+    return getenv("JWT_ALGORITHM")

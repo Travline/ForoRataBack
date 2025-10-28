@@ -26,7 +26,7 @@ async def verify_secret(storaged_secret:str, secret:str) -> Optional[bool]:
     try:
         if len((str(secret)).strip()) >= 8:
             pepper = await get_pepper()
-            return ph.verify(storaged_secret, secret+pepper)
+            return ph.verify(storaged_secret, secret+pepper)   
         else:
             return None
     except Argon2Error as ae:
