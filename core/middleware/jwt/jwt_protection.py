@@ -1,4 +1,4 @@
-from fastapi import Request, HTTPException, status
+from fastapi import Request, HTTPException, status, Response
 from jose import jwt, JWTError
 from datetime import datetime, UTC
 from core.middleware.jwt.jwt_manager import create_token, read_token
@@ -20,3 +20,12 @@ async def get_current_user(request:Request) -> Optional[str]:
         return payload["user_id"]
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid JWT")
+    
+async def send_cookie(cookie:Response, response:str):
+    cookie.set_cookie(  
+            key="fororata_access_token",
+            value=response,
+            httponly=True,
+            samesite="lax",
+            secure=False
+        )
