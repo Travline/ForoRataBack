@@ -39,3 +39,10 @@ async def me(user_id:Optional[str] = Depends(get_current_user)):
             return {"me" : user_id}
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error: {str(e)}")
+
+@app.get("/health")
+async def health():
+    try:
+        return {"message": "increible"}
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error: {str(e)}")
