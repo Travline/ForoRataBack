@@ -26,6 +26,6 @@ async def send_cookie(cookie:Response, response:str):
             key="fororata_access_token",
             value=response,
             httponly=True,
-            samesite="lax",
-            secure=False
+            samesite="none",
+            secure=True
         )

@@ -5,6 +5,7 @@ from users.services import get_user_profile_data, create_new_user, check_user_lo
 from typing import Optional, List
 from utils.exceptions import ServiceError
 from asyncpg.exceptions import UniqueViolationError
+from core.middleware.jwt.jwt_protection import send_cookie
 
 router = APIRouter()
 
@@ -23,13 +24,7 @@ async def create_user(cookie:Response, user_data:UserCreate):
     try:
         response = await create_new_user(user_data)
         if not response is None:
-            cookie.set_cookie(
-                key="fororata_access_token",
-                value=response,
-                httponly=True,
-                samesite="lax",
-                secure=False
-            )
+            send_cookie(cookie, response)
             return JSONResponse(content=response, status_code=status.HTTP_201_CREATED)
     except UniqueViolationError as uve:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User alredy exists")
@@ -42,7 +37,7 @@ async def user_login(cookie:Response,user_data:UserLogin):
         response = await check_user_login(user_data)
         if not response:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-        
+        send_cookie(cookie, response)
     except ServiceError as se:
         print(se)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
