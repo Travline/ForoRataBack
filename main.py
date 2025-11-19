@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request, HTTPException, Depends, status
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from core.middleware.jwt.jwt_protection import get_current_user
@@ -38,6 +39,8 @@ async def me(user_id:Optional[str] = Depends(get_current_user)):
     try:
         if user_id:
             return {"me" : user_id}
+        else:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="No loged")
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error: {str(e)}")
 
