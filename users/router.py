@@ -25,7 +25,7 @@ async def create_user(cookie:Response, user_data:UserCreate):
         response = await create_new_user(user_data)
         if not response is None:
             send_cookie(cookie, response)
-            return JSONResponse(content=response, status_code=status.HTTP_201_CREATED)
+            return JSONResponse(content={"message": "Register succesfully"}, status_code=status.HTTP_201_CREATED)
     except UniqueViolationError as uve:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User alredy exists")
     except ServiceError as se:
