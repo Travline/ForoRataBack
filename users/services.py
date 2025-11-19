@@ -49,12 +49,21 @@ async def get_user_profile_data(user_id:str) -> Optional[dict]:
     
 async def check_user_login(user_data:UserLogin) -> Optional[dict]:
     try:
+        print('llega dataxd')
         data = await select_user_credentials(user_data.id_user.strip())
         if not data is None:
             storaged_pass = data["password_hash"]
-            if await verify_secret(storaged_pass, user_data.password_hash.strip()):
+            try:
+                veryfied = await verify_secret(storaged_pass, user_data.password_hash.strip())
+            except Exception:
+                return None    
+            print(veryfied)
+            if not veryfied:
+                return None
+            if veryfied:
                 user = user_data.id_user.strip()
                 token = await create_token(user)
+                print(token)
                 return token
     except Exception as e:
         raise ServiceError(f"Building user error: {str(e)}") from e
