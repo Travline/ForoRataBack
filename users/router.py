@@ -37,7 +37,7 @@ async def user_login(cookie:Response,user_data:UserLogin):
         response = await check_user_login(user_data)
         if not response:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-        send_cookie(cookie, response)
+        await send_cookie(cookie, response)
         return { "message": "Loged successfully" }
     except ServiceError as se:
         print(se)
