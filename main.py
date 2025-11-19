@@ -18,6 +18,7 @@ app = FastAPI(lifespan=lifespan)
 origins = [
     "http://localhost:4200",
     "http://localhost:3000",
+    "https://fororataback.onrender.com",
     "https://fororata.vercel.app"
 ]
 
