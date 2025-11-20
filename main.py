@@ -38,10 +38,9 @@ app.include_router(posts_router, prefix="/posts")
 @app.get("/me")
 async def me(user_id:Optional[str] = Depends(get_current_user)):
     try:
-        if user_id:
-            return {"me" : user_id}
-        else:
+        if user_id is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="No loged")
+        return {"me" : user_id}
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error: {str(e)}")
 
