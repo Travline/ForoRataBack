@@ -8,7 +8,7 @@ from posts.services import create_post
 router = APIRouter()
 
 @router.post("/add_post")
-async def add_post(content:str, reply:str , user_id:Optional[str] = Depends(get_current_user)):
+async def add_post(content:str, reply:Optional[str] , user_id:Optional[str] = Depends(get_current_user)):
   try:
     if user_id is None:
       raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing token")
