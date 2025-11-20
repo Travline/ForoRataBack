@@ -5,7 +5,7 @@ from typing import Optional
 
 async def create_token(user_id) -> Optional[str]:
     currentTime = int(datetime.now(UTC).timestamp())
-    exp:int = currentTime + 600
+    exp:int = currentTime + 3600
     payload:dict = {
         "user_id": user_id,
         "exp" : exp
