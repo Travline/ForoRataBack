@@ -14,7 +14,8 @@ async def insert_post(id_post:str, content:str, user_id:str) -> bool:
   
 async def select_home_posts() -> Optional[List[dict]]:
   try:
-    query = """SELECT content_post, id_post, id_user, likes_count, comments_count, created FROM posts"""
+    query = """SELECT content_post, id_post, id_user, likes_count, comments_count, created 
+                FROM posts ORDER BY created DESC"""
     data = await fetch_all(query)
     if not data:
       return None
