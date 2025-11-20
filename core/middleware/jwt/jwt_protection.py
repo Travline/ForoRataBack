@@ -13,13 +13,13 @@ async def get_current_user(request:Request) -> Optional[str]:
         payload = await read_token(token)
         user_exists = await findUser(payload.get("user_id"))
         if not user_exists:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid user")
+            return None
         currentTime = int(datetime.now(UTC).timestamp())
         if (int(payload.get("exp")) < currentTime):
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Expired token")
+            return None
         return payload["user_id"]
     except JWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid JWT")
+        return None
     
 async def send_cookie(cookie:Response, response:str):
     cookie.set_cookie(  

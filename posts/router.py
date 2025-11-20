@@ -21,7 +21,7 @@ async def add_post(post:PostRequest , user_id:Optional[str] = Depends(get_curren
     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
   
 @router.get("/home")
-async def add_post(user_id:Optional[str] = Depends(get_current_user)):
+async def home_posts(user_id:Optional[str] = Depends(get_current_user)):
   try:
     if user_id:
       response = await get_home_posts()
