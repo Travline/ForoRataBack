@@ -8,7 +8,7 @@ from typing import Optional
 async def get_current_user(request:Request) -> Optional[str]:
     token = request.cookies.get("fororata_access_token")
     if not token:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing JWT cookie")
+        return None
     try:
         payload = await read_token(token)
         user_exists = await findUser(payload.get("user_id"))
