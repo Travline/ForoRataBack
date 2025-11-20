@@ -23,10 +23,9 @@ async def add_post(post:PostRequest , user_id:Optional[str] = Depends(get_curren
 @router.get("/home")
 async def home_posts(user_id:Optional[str] = Depends(get_current_user)):
   try:
-    if user_id:
-      response = await get_home_posts()
     if user_id is None:
-      response = await get_home_posts()
+      user_id = ''
+    response = await get_home_posts(user_id)
     if not response:
       raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Posts not found")
     return response

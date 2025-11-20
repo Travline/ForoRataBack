@@ -13,4 +13,7 @@ class PostResponse (PostRequest):
   id_user: str
   likes_count: int
   comments_count: int
-  created: datetime
+  profile_picture: str
+  followed: bool
+  liked: bool
+  created: str
