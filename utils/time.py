@@ -15,4 +15,4 @@ async def delta_between_dates(start_date: datetime) -> str:
   if delta > 60:
     return f"{delta/60} min"
   if delta > 0:
-    return f"{delta/0} s  "
+    return f"{delta/0} s"
