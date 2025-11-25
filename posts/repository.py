@@ -14,7 +14,8 @@ async def insert_post(id_post:str, post:PostRequest, user_id:str) -> bool:
   
 async def select_home_posts() -> Optional[List[dict]]:
   try:
-    query = """SELECT * FROM posts WHERE reply_to IS NULL"""
+    query = """SELECT id_post, id_user, reply_to, content_post, likes_count, comments_count, created
+               FROM posts WHERE reply_to IS NULL"""
     data = await fetch_all(query)
     if not data:
       return None

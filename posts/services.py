@@ -43,6 +43,7 @@ async def get_home_posts(id_user:str) -> Optional[List[PostResponse]]:
       res.append(PostResponse(
         id_post=post["id_post"],
         id_user=post["id_user"],
+        reply_to=post["reply_to"],
         profile_picture= pfp["profile_picture"],
         content_post=post["content_post"],
         followed= following,
@@ -53,6 +54,7 @@ async def get_home_posts(id_user:str) -> Optional[List[PostResponse]]:
       ))
     return res
   except Exception as e:
+      print(e)
       raise ServiceError(f"Building user error: {str(e)}") from e
 
 async def set_replies(data:List[dict], id_user:str) -> List[PostResponse]:
