@@ -18,7 +18,7 @@ async def insert_post(id_post:str, post:PostRequest, user_id:str) -> bool:
 async def select_home_posts() -> Optional[List[dict]]:
   try:
     query = """SELECT id_post, id_user, reply_to, content_post, likes_count, comments_count, created
-               FROM posts WHERE reply_to IS NULL"""
+               FROM posts WHERE reply_to IS NULL ORDER BY created DESC"""
     data = await fetch_all(query)
     if not data:
       return None
@@ -32,7 +32,7 @@ async def select_home_posts() -> Optional[List[dict]]:
 async def select_replies(reply_to:str) -> Optional[List[dict]]:
   try:
     query = """SELECT id_post, id_user, reply_to, content_post, likes_count, comments_count, created
-               FROM posts WHERE reply_to = $1"""
+               FROM posts WHERE reply_to = $1 ORDER BY created DESC"""
     data = await fetch_all(query, reply_to)
     if not data:
       return None
