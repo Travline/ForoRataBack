@@ -25,5 +25,4 @@ async def read_token(token:str) -> Optional[dict]:
                                 algorithms= await get_jwt_algorithm())
         return payload
     except JWTError as jwte:
-        print(jwte)
         raise JWTError(jwte)

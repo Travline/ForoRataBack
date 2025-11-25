@@ -1,21 +1,20 @@
 from core.database.db_helper import execute_query, fetch_all, fetch_one
 from asyncpg import UniqueViolationError, PostgresError
-from posts.schemas import PostResponse
+from posts.schemas import PostResponse, PostRequest
 from typing import Optional, List
 
-async def insert_post(id_post:str, content:str, user_id:str) -> bool:
+async def insert_post(id_post:str, post:PostRequest, user_id:str) -> bool:
   try:
-    query = """INSERT INTO posts (id_post, content_post, id_user) 
-                VALUES($1, $2, $3);"""
-    await execute_query(query, id_post, content, user_id)
+    query = """INSERT INTO posts (id_post, content_post, reply_to, id_user) 
+                VALUES($1, $2, $3, $4);"""
+    await execute_query(query, id_post, post.content_post, post.reply_to, user_id)
     return True
   except UniqueViolationError as uve:
       raise UniqueViolationError(f"{str(uve)}") from uve
   
 async def select_home_posts() -> Optional[List[dict]]:
   try:
-    query = """SELECT content_post, id_post, id_user, likes_count, comments_count, created 
-                FROM posts ORDER BY created DESC"""
+    query = """SELECT * FROM posts WHERE reply_to IS NULL"""
     data = await fetch_all(query)
     if not data:
       return None
@@ -24,9 +23,36 @@ async def select_home_posts() -> Optional[List[dict]]:
       response.append(dict(d))
     return response
   except PostgresError as pge:
-    print(str(pge))
     raise PostgresError(f"{str(pge)}") from pge
   
+async def select_focus_post(id_post_req) -> Optional[dict] :
+  try:
+    query = """SELECT content_post, id_post, id_user, likes_count, comments_count, created 
+                FROM posts WHERE id_post = $1"""
+    data = await fetch_one(query, id_post_req)
+    if not data:
+      return None
+    return dict(data)
+  except PostgresError as pge:
+    raise PostgresError(f"{str(pge)}") from pge
+
+async def select_post_replies(id_post_req) -> Optional[List[dict]] :
+  try:
+    query = """SELECT p.id_post, p.id_user, p.content_post, p.likes_count, p.comments_count, p.created
+                FROM posts p
+                JOIN replies r ON p.id_post = r.id_reply
+                WHERE r.id_post = $1;
+            """
+    data = await fetch_one(query, id_post_req)
+    if not data:
+      return None
+    response: List[dict] = []
+    for d in data:
+      response.append(dict(d))
+    return response
+  except PostgresError as pge:
+    raise PostgresError(f"{str(pge)}") from pge
+
 async def verify_likes(id_user:str, id_post:str) -> bool:
   try:
     query = """SELECT id_user 
@@ -38,31 +64,3 @@ async def verify_likes(id_user:str, id_post:str) -> bool:
     return True
   except PostgresError as pe:
     raise PostgresError(pe)
-  
-async def count_likes(id_post:str) -> int:
-  try:
-    query = """SELECT id_user FROM likes WHERE id_post = $1"""
-    data = await fetch_all(query, id_post)
-    if not data:
-      return 0
-    response: List[dict] = []
-    for d in data:
-      response.append(dict(d))
-    return len(response)
-  except PostgresError as pge:
-    print(str(pge))
-    raise PostgresError(f"{str(pge)}") from pge
-  
-async def count_replies(id_post:str) -> int:
-  try:
-    query = """SELECT id_reply FROM replies WHERE id_post = $1"""
-    data = await fetch_all(query, id_post)
-    if not data:
-      return 0
-    response: List[dict] = []
-    for d in data:
-      response.append(dict(d))
-    return len(response)
-  except PostgresError as pge:
-    print(str(pge))
-    raise PostgresError(f"{str(pge)}") from pge

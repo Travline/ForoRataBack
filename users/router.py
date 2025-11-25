@@ -40,7 +40,6 @@ async def user_login(cookie:Response,user_data:UserLogin):
         await send_cookie(cookie, response)
         return { "message": "Loged successfully" }
     except ServiceError as se:
-        print(se)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
 
 @router.get("/searching")

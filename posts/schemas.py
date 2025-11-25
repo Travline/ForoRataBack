@@ -1,12 +1,10 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 class PostRequest (BaseModel):
   content_post: str
-
-class ReplyRquest (PostRequest):
-  reply: str
+  reply_to: Optional[str]
 
 class PostResponse (PostRequest):
   id_post: str
@@ -17,3 +15,6 @@ class PostResponse (PostRequest):
   followed: bool
   liked: bool
   created: str
+
+class PostFocusResponse (PostResponse):
+  replies: List[PostResponse]
