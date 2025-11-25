@@ -8,6 +8,9 @@ async def insert_post(id_post:str, post:PostRequest, user_id:str) -> bool:
     query = """INSERT INTO posts (id_post, content_post, reply_to, id_user) 
                 VALUES($1, $2, $3, $4);"""
     await execute_query(query, id_post, post.content_post, post.reply_to, user_id)
+    if post.reply_to:
+      await execute_query("UPDATE posts SET comments_count = comments_count + 1 WHERE id_post = $1", post.reply_to)
+      
     return True
   except UniqueViolationError as uve:
       raise UniqueViolationError(f"{str(uve)}") from uve
@@ -25,32 +28,29 @@ async def select_home_posts() -> Optional[List[dict]]:
     return response
   except PostgresError as pge:
     raise PostgresError(f"{str(pge)}") from pge
-  
-async def select_focus_post(id_post_req) -> Optional[dict] :
-  try:
-    query = """SELECT content_post, id_post, id_user, likes_count, comments_count, created 
-                FROM posts WHERE id_post = $1"""
-    data = await fetch_one(query, id_post_req)
-    if not data:
-      return None
-    return dict(data)
-  except PostgresError as pge:
-    raise PostgresError(f"{str(pge)}") from pge
 
-async def select_post_replies(id_post_req) -> Optional[List[dict]] :
+async def select_replies(reply_to:str) -> Optional[List[dict]]:
   try:
-    query = """SELECT p.id_post, p.id_user, p.content_post, p.likes_count, p.comments_count, p.created
-                FROM posts p
-                JOIN replies r ON p.id_post = r.id_reply
-                WHERE r.id_post = $1;
-            """
-    data = await fetch_one(query, id_post_req)
+    query = """SELECT id_post, id_user, reply_to, content_post, likes_count, comments_count, created
+               FROM posts WHERE reply_to = $1"""
+    data = await fetch_all(query, reply_to)
     if not data:
       return None
     response: List[dict] = []
     for d in data:
       response.append(dict(d))
     return response
+  except PostgresError as pge:
+    raise PostgresError(f"{str(pge)}") from pge
+  
+async def select_focus_post(id_post_req) -> Optional[dict] :
+  try:
+    query = """SELECT content_post, id_post, id_user, reply_to, likes_count, comments_count, created 
+                FROM posts WHERE id_post = $1"""
+    data = await fetch_one(query, id_post_req)
+    if not data:
+      return None
+    return dict(data)
   except PostgresError as pge:
     raise PostgresError(f"{str(pge)}") from pge
 

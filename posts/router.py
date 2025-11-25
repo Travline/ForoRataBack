@@ -33,7 +33,7 @@ async def home_posts(user_id:Optional[str] = Depends(get_current_user)):
     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
 
 @router.get("/focus/{id_post}")
-async def home_posts(id_post:str, user_id:Optional[str] = Depends(get_current_user)):
+async def focus_post(id_post:str, user_id:Optional[str] = Depends(get_current_user)):
   try:
     if user_id is None:
       user_id = ''
@@ -42,5 +42,4 @@ async def home_posts(id_post:str, user_id:Optional[str] = Depends(get_current_us
       raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Posts not found")
     return response
   except ServiceError as se:
-    print(se)
     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
