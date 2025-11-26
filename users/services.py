@@ -33,7 +33,7 @@ async def random_rat_url():
                 "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/like.webp",
                 "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/bruh.webp",
                 "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/troste.webp"]
-    return rats_url[randint(0,6)] 
+    return rats_url[randint(0,len(rats_url))] 
 
 async def create_new_user(user_data:UserCreate):
     try:
