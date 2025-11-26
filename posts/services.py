@@ -35,9 +35,9 @@ async def get_home_posts(id_user:str) -> Optional[List[PostResponse]]:
     
     for post in data:
       if id_user != '':
-        if id_user != post["id_user"]:
-          following = await verify_follows(id_user, post["id_user"])
-        following = True
+        if id_user == post["id_user"]:
+          following = True
+        following = await verify_follows(id_user, post["id_user"])
 
       like = await verify_likes(id_user, post["id_post"])
       pfp = await basic_user_data(post["id_user"])
