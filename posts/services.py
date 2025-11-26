@@ -35,8 +35,10 @@ async def get_home_posts(id_user:str) -> Optional[List[PostResponse]]:
     
     for post in data:
       if id_user != '':
-        following = await verify_follows(id_user, post["id_user"])
-    
+        if id_user != post["id_user"]:
+          following = await verify_follows(id_user, post["id_user"])
+        following = True
+
       like = await verify_likes(id_user, post["id_post"])
       pfp = await basic_user_data(post["id_user"])
 
@@ -67,7 +69,9 @@ async def get_replies(id_post:str, id_user:str) -> Optional[List[PostResponse]]:
     
     for post in data:
       if id_user != '':
-        following = await verify_follows(id_user, post["id_user"])
+        if id_user != post["id_user"]:
+          following = await verify_follows(id_user, post["id_user"])
+        following = True
     
       like = await verify_likes(id_user, post["id_post"])
       pfp = await basic_user_data(post["id_user"])
@@ -97,7 +101,9 @@ async def get_focus_post(id_post:str, id_user:str) -> Optional[PostFocusResponse
     like = False
 
     if id_user != '':
-      following = await verify_follows(id_user, post["id_user"])
+        if id_user != post["id_user"]:
+          following = await verify_follows(id_user, post["id_user"])
+        following = True
   
     like = await verify_likes(id_user, post["id_post"])
     pfp = await basic_user_data(post["id_user"])
