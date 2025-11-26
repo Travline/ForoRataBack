@@ -14,7 +14,25 @@ async def random_rat_url():
                 "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/roasted.webp",
                 "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/roll.webp",
                 "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/snake.webp",
-                "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/xd.webp"]
+                "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/xd.webp",
+                "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/helm.webp",
+                "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/roasted.webp",
+                "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/dance3.webp",
+                "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/rage.webp",
+                "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/funny.webp",
+                "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/read.webp",
+                "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/dance1.webp",
+                "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/tv.webp",
+                "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/rolling.webp",
+                "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/dance2.webp",
+                "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/ratballoon.webp",
+                "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/balloon.webp",
+                "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/partytroste.webp",
+                "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/huh.webp",
+                "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/fairy.webp",
+                "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/like.webp",
+                "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/bruh.webp",
+                "https://umoiqpsvrnfyqgdzxcjm.supabase.co/storage/v1/object/public/rats/troste.webp"]
     return rats_url[randint(0,6)] 
 
 async def create_new_user(user_data:UserCreate):
