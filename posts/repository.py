@@ -29,6 +29,20 @@ async def select_home_posts() -> Optional[List[dict]]:
   except PostgresError as pge:
     raise PostgresError(f"{str(pge)}") from pge
 
+async def select_user_posts(focus_user:str) -> Optional[List[dict]]:
+  try:
+    query = """SELECT id_post, id_user, reply_to, content_post, likes_count, comments_count, created
+               FROM posts WHERE reply_to IS NULL AND id_user = $1 ORDER BY created DESC"""
+    data = await fetch_all(query, focus_user)
+    if not data:
+      return None
+    response: List[dict] = []
+    for d in data:
+      response.append(dict(d))
+    return response
+  except PostgresError as pge:
+    raise PostgresError(f"{str(pge)}") from pge
+
 async def select_replies(reply_to:str) -> Optional[List[dict]]:
   try:
     query = """SELECT id_post, id_user, reply_to, content_post, likes_count, comments_count, created

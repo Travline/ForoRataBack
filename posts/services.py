@@ -1,4 +1,4 @@
-from posts.repository import insert_post, select_home_posts, verify_likes, select_replies, select_focus_post
+from posts.repository import insert_post, select_home_posts, verify_likes, select_replies, select_focus_post, select_user_posts
 from utils.exceptions import ServiceError
 from string import ascii_letters, digits
 import random
@@ -27,6 +27,40 @@ async def create_post(post:PostRequest, user_id:str) -> bool:
 async def get_home_posts(id_user:str) -> Optional[List[PostResponse]]:
   try:
     data = await select_home_posts()
+    if not data:
+      return None
+    res: List[PostResponse] = []
+    following = False
+    like = False
+    
+    for post in data:
+      if id_user != '':
+        if id_user == post["id_user"]:
+          following = True
+        following = await verify_follows(id_user, post["id_user"])
+
+      like = await verify_likes(id_user, post["id_post"])
+      pfp = await basic_user_data(post["id_user"])
+
+      res.append(PostResponse(
+        id_post=post["id_post"],
+        id_user=post["id_user"],
+        reply_to=post["reply_to"],
+        profile_picture= pfp["profile_picture"],
+        content_post=post["content_post"],
+        followed= following,
+        liked= like,
+        likes_count= post["likes_count"],
+        comments_count= post["comments_count"],
+        created= await delta_between_dates(post["created"])
+      ))
+    return res
+  except Exception as e:
+      raise ServiceError(f"Building user error: {str(e)}") from e
+
+async def get_user_posts(focus_user:str ,id_user:str) -> Optional[List[PostResponse]]:
+  try:
+    data = await select_user_posts(focus_user)
     if not data:
       return None
     res: List[PostResponse] = []

@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from utils.exceptions import ServiceError
 from typing import Optional
 from core.middleware.jwt.jwt_protection import get_current_user
-from posts.services import create_post, get_home_posts, get_focus_post
+from posts.services import create_post, get_home_posts, get_focus_post, get_user_posts
 from posts.schemas import PostRequest
 
 router = APIRouter()
@@ -26,6 +26,18 @@ async def home_posts(user_id:Optional[str] = Depends(get_current_user)):
     if user_id is None:
       user_id = ''
     response = await get_home_posts(user_id)
+    if not response:
+      raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Posts not found")
+    return response
+  except ServiceError as se:
+    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
+
+@router.get("/user/{id_user}")
+async def home_posts(id_user, user_id:Optional[str] = Depends(get_current_user)):
+  try:
+    if user_id is None:
+      user_id = ''
+    response = await get_user_posts(focus_user=id_user , id_user=user_id)
     if not response:
       raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Posts not found")
     return response
